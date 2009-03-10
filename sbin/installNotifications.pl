@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 #-------------------------------------------------------------------
-# Copyright 2009 SDH Corporation.
+# Copyright 2009 SDH Consulting Group
 #-------------------------------------------------------------------
 
 $|++; # disable output buffering
@@ -31,7 +31,6 @@ pod2usage( msg => "Must specify a config file!" ) unless $configFile;
 
 my $session = start( $webguiRoot, $configFile );
 
-installUserProfileFields($session);
 installSettings($session);
 
 # Do your work here
@@ -40,41 +39,8 @@ finish($session);
 #----------------------------------------------------------------------------
 # Your sub here
 
-sub installUserProfileFields {
-    my $session = shift;
-    WebGUI::ProfileField->create(
-        $session,
-        'receiveInboxEmailNotifications',
-        {
-            label          => q!WebGUI::International::get('receive inbox emails','Message_Center')!,
-            visible        => 1,
-            required       => 0,
-            protected      => 1,
-            editable       => 1,
-            fieldType      => 'yesNo',
-            dataDefault    => 1,
-        },
-        4,
-    );
-    WebGUI::ProfileField->create(
-        $session,
-        'receiveInboxSMSNotifications',
-        {
-            label          => q!WebGUI::International::get('receive inbox sms','Message_Center')!,
-            visible        => 1,
-            required       => 0,
-            protected      => 1,
-            editable       => 1,
-            fieldType      => 'yesNo',
-            dataDefault    => 0,
-        },
-        4,
-    );
-}
-
 sub installSettings {
     my $session = shift;
-    $session->setting->add('smsGateway', '');
     $session->setting->add('sendInboxNotificationsOnly', 0);
     $session->setting->add('inboxNotificationTemplateId', 'b1316COmd9xRv4fCI3LLGA');
 }
@@ -204,7 +170,7 @@ Shows this document
 
 =head1 AUTHOR
 
-Copyright 2001-2008 Plain Black Corporation.
+Copyright 2009 SDH Consulting Group
 
 =cut
 
