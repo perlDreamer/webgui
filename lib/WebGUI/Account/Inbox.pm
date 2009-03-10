@@ -223,6 +223,19 @@ sub editSettingsForm {
         label       => $i18n->get("inbox rich editor label"),
         hoverHelp   => $i18n->get("inbox rich editor description"),
     );
+    $f->yesNo(
+		name         => 'sendInboxNotificationsOnly',
+		label        => $i18n->get('send inbox notifications only'),
+		hoverHelp    => $i18n->get('send inbox notifications only help'),
+		defaultValue => $setting->get('sendInboxNotificationsOnly'),
+    );
+    $f->template(
+		name         => 'inboxNotificationTemplateId',
+		label        => $i18n->get('inbox notification template'),
+		hoverHelp    => $i18n->get('inbox notification template help'),
+		defaultValue => $setting->get('inboxNotificationTemplateId'),
+        namespace    => 'Account/Inbox/Notification',
+    );
     
     return $f->printRowsOnly;
 }
@@ -264,6 +277,10 @@ sub editSettingsFormSave {
     $setting->set("inboxInviteUserConfirmTemplateId",$form->process("inboxInviteUserConfirmTemplateId","template"));
 
     $setting->set("inboxRichEditorId", $form->process("inboxRichEditorId", "selectRichEditor") );
+
+    #Inbox Notification Settings
+    $setting->set("sendInboxNotificationsOnly",  $form->process("sendInboxNotificationsOnly", "yesNo"));
+    $setting->set("inboxNotificationTemplateId", $form->process("inboxNotificationTemplateId","template"));
 }
 
 
