@@ -1175,6 +1175,19 @@ sub www_sendMessageSave {
         sentBy  => $fromUser->userId
     };
 
+    if ($session->setting->get('sendInboxNotificationsOnly')) {
+        my $template = WebGUI::Asset::Template->new($session, $session->setting->get('inboxNotificationTemplateId'));
+        if ($template) {
+            ##Create template variables
+            ##Fill in template
+            ##Assign template output to $messageProperties->{emailMessage}
+        }
+        else {
+            $session->log->warn(sprintf "Unable to instanciate notification template: ". $session->setting->get('inboxNotificationTemplateId'));
+        }
+
+    }
+
     foreach my $uid (@toUsers) {
         $messageProperties->{userId} = $uid;
         $inbox->addMessage($messageProperties);
