@@ -1179,8 +1179,18 @@ sub www_sendMessageSave {
         my $template = WebGUI::Asset::Template->new($session, $session->setting->get('inboxNotificationTemplateId'));
         if ($template) {
             ##Create template variables
+            my $var = {
+                fromUsername => $fromuser->username,
+                subject      => $messageProperties->{subject},
+                message      => $messageProperties->{message},
+                inboxLink    => $session->url->append($session->url->getSiteURL, 'op=account;module=inbox;'),
+            };
             ##Fill in template
+            my $output = $template->process($var);
+            ##Evaluate macros by hand
+            WebGUI::Macro::process(\$output);
             ##Assign template output to $messageProperties->{emailMessage}
+            $messageProperties->{emailMessage} = $output;
         }
         else {
             $session->log->warn(sprintf "Unable to instanciate notification template: ". $session->setting->get('inboxNotificationTemplateId'));
