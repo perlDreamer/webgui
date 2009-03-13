@@ -233,7 +233,7 @@ sub editSettingsForm {
 		name         => 'inboxNotificationTemplateId',
 		label        => $i18n->get('inbox notification template'),
 		hoverHelp    => $i18n->get('inbox notification template help'),
-		defaultValue => $setting->get('inboxNotificationTemplateId'),
+		defaultValue => $self->getInboxNotificationTemplateId,
         namespace    => 'Account/Inbox/Notification',
     );
     
@@ -295,6 +295,19 @@ This method returns the template ID for inbox errors.
 sub getInboxErrorTemplateId {
     my $self = shift;
     return $self->session->setting->get("inboxErrorTemplateId") || "ErEzulFiEKDkaCDVmxUavw";
+}
+
+#-------------------------------------------------------------------
+
+=head2 getInboxNotificationTemplateId ( )
+
+This method returns the template ID for inbox notifications.
+
+=cut
+
+sub getInboxNotificationTemplateId {
+    my $self = shift;
+    return $self->session->setting->get("inboxNotificationTemplateId") || "b1316COmd9xRv4fCI3LLGA";
 }
 
 #-------------------------------------------------------------------
@@ -1176,24 +1189,24 @@ sub www_sendMessageSave {
     };
 
     if ($session->setting->get('sendInboxNotificationsOnly')) {
-        my $template = WebGUI::Asset::Template->new($session, $session->setting->get('inboxNotificationTemplateId'));
+        my $template = WebGUI::Asset::Template->new($session, $self->getInboxNotificationTemplateId);
         if ($template) {
             ##Create template variables
             my $var = {
-                fromUsername => $fromuser->username,
+                fromUsername => $fromUser->username,
                 subject      => $messageProperties->{subject},
                 message      => $messageProperties->{message},
-                inboxLink    => $session->url->append($session->url->getSiteURL, 'op=account;module=inbox;'),
+                inboxLink    => $session->url->append($session->url->getSiteURL, 'op=account;module=inbox'),
             };
             ##Fill in template
             my $output = $template->process($var);
             ##Evaluate macros by hand
-            WebGUI::Macro::process(\$output);
+            WebGUI::Macro::process($session, \$output);
             ##Assign template output to $messageProperties->{emailMessage}
             $messageProperties->{emailMessage} = $output;
         }
         else {
-            $session->log->warn(sprintf "Unable to instanciate notification template: ". $session->setting->get('inboxNotificationTemplateId'));
+            $session->log->warn(sprintf "Unable to instanciate notification template: ". $self->getInboxNotificationTemplateId);
         }
 
     }
